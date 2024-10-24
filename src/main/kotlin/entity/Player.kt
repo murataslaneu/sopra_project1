@@ -4,12 +4,8 @@ class Player(
     var name : String,
     var score : Int,
     var swapped : Boolean,
-    var hand : List<Card>,
-    var playerStack : List<Card>
+    var hand : MutableList<Card?>,
+    var playerStack : MutableList<Card?>
 ) {
-    /*fun addCard(card : Card) {}
 
-    fun removeCard(card : Card) {}
-
-    fun playCard(card : Card) {}*/
 }

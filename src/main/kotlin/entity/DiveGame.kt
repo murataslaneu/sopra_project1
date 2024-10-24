@@ -2,13 +2,10 @@ package entity
 
 class DiveGame(
     var currentPlayer: Player,
-    var playerList: List<Player>,
-    var discradCard : List<Card>,
-    var trio : List<Card>,
-    var drawStack : List<Card>
+    var playerList: MutableList<Player>,
+    var discradCard : MutableList<Card>,
+    var trio : MutableList<Card>,
+    var drawStack : MutableList<Card>
 
 ){
-    /*fun startNewGame(playerNames : List<String>){
-
-    }*/
 }
