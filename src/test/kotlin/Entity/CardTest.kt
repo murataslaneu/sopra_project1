@@ -26,7 +26,7 @@ class CardTest {
         )
         assertFalse(card.isHidden)
         assertEquals(CardSuit.DIAMONDS, card.suit)
-        assertEquals(CardValue.SEVEN, card.suit)
+        assertEquals(CardValue.SEVEN, card.cValue)
         assertDoesNotThrow {
             card.isHidden;
             card.suit = CardSuit.DIAMONDS;
