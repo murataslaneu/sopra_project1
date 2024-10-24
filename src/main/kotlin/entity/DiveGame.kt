@@ -8,4 +8,9 @@ class DiveGame(
     var trio : List<Card>,
     var drawStack : List<Card>
 
-)
+){
+    fun startNewGame(playerNames : List<String>){
+        playerList.add(playerNames)
+
+    }
+}
