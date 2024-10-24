@@ -27,10 +27,12 @@ class CardTest {
         assertFalse(card.isHidden)
         assertEquals(CardSuit.DIAMONDS, card.suit)
         assertEquals(CardValue.SEVEN, card.cValue)
+        assertEquals(null, card.diveGame)
         assertDoesNotThrow {
             card.isHidden;
             card.suit = CardSuit.DIAMONDS;
             card.cValue = CardValue.SEVEN;
+            card.diveGame = null;
         }
     }
 }
