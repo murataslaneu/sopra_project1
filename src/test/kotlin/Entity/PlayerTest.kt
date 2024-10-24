@@ -4,6 +4,12 @@ import entity.Player
 import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
+/**
+ * Test für Player
+ * @param  testPlayer, überprüft die gegebene Eingaben ob die richtig sind
+ * @throws IllegalStateException wenn ungültige Eingaben gegeben sind
+ */
+
 class PlayerTest {
     @Test
     fun testPlayer() {

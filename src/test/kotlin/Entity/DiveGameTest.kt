@@ -7,6 +7,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 
+/**
+ * Test für DiveGame
+ * @param testDiveGame tested ob currentPlayer richtige person ist
+ * @throws IllegalStateException wenn ungültige Eingaben gegeben sind
+ */
+
 class DiveGameTest {
     @Test
     fun testDiveGame() {
