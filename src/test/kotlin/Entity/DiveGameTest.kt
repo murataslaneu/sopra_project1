@@ -1,42 +1,26 @@
-package Entity
-
-import entity.DiveGame
-import entity.Player
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-
+package entity
+import kotlin.test.*
 /**
- * Test für DiveGame
- * @param testDiveGame tested ob currentPlayer richtige person ist
- * @throws IllegalStateException wenn ungültige Eingaben gegeben sind
+ * Diese Klasse enthält Testfälle für die DiveGame Klasse, um sicherzustellen, dass die
+ * Eigenschaften des Spiels korrekt initialisiert und geprüft werden.
  */
-
 class DiveGameTest {
     @Test
     fun testDiveGame() {
         val game = DiveGame(
-            currentPlayer = Player("Tom", score = 30, swapped = true ,hand = mutableListOf(), playerStack = mutableListOf()),
-            playerList = mutableListOf(),
-            discradCard = mutableListOf(),
-            trio = mutableListOf(),
-            drawStack = mutableListOf()
+            currentPlayer = Player(         //Alle Eingenschaften für Spieler eingegeben.
+                "Tom", 30, true ,
+                mutableListOf(), mutableListOf()
+            ),
+            playerList = mutableListOf(),   //Für Player List ein mutableList eingegeben.
+            discardStack = mutableListOf(), //Für discardStack ein mutableList eingegeben.
+            trio = mutableListOf(),         //Für trio ein mutableList eingegeben.
+            drawStack = mutableListOf()     //Für drawStack List ein mutableList eingegeben.
         )
-        assertEquals(game.currentPlayer, game.currentPlayer)
-        assertTrue(game.playerList.isEmpty())
-        assertTrue(game.discradCard.isEmpty())
-        assertTrue(game.trio.isEmpty())
-        assertTrue(game.drawStack.isEmpty())
-
-        assertDoesNotThrow{
-            game.currentPlayer = Player("Tom", score = 30, swapped = true ,hand = mutableListOf(), playerStack = mutableListOf());
-            game.playerList = mutableListOf();
-            game.discradCard = mutableListOf();
-            game.trio = mutableListOf();
-            game.drawStack = mutableListOf();
-
-        }
-
+        assertEquals(game.currentPlayer, game.currentPlayer)    //Geprüft, ob aktuelle Spieler korrekt ist.
+        assertTrue(game.playerList.isEmpty())                   //Geprüft, ob Player List leer ist.
+        assertTrue(game.discardStack.isEmpty())                 //Geprüft, ob discardStack leer ist.
+        assertTrue(game.trio.isEmpty())                         //Geprüft, ob trio leer ist.
+        assertTrue(game.drawStack.isEmpty())                    //Geprüft, ob drawStack leer ist.
     }
 }

@@ -1,38 +1,19 @@
-package Entity
-
-import entity.Card
-import entity.CardSuit
-import entity.CardValue
-import entity.DiveGame
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-
+package entity
+import kotlin.test.*
 /**
- * Test für Card, verknüpft mit suit und Value zu CardSuit und CardValue
- * @param testCard welche gespielt werden soll, und zeigt uns ob es abgedeckt oder nicht
- * @throws IllegalStateException wenn Karte ungültig ist
+ * Diese Klasse enthält Testfälle für die Card Klasse, um sicherzustellen, dass die
+ * Karteneigenschaften korrekt initialisiert und geprüft werden.
  */
-
 class CardTest {
     @Test
     fun testCard() {
         val card = Card(
-            isHidden = false,
-            suit = CardSuit.DIAMONDS,
-            cValue = CardValue.SEVEN,
-            diveGame = null
+            isHidden = false,           //für isHidden false eingegeben.
+            suit = CardSuit.DIAMONDS,   //für CardSuit ist Diamond eingegeben.
+            value = CardValue.SEVEN     //für CardValue ist Seven eingegeben.
         )
-        assertFalse(card.isHidden)
-        assertEquals(CardSuit.DIAMONDS, card.suit)
-        assertEquals(CardValue.SEVEN, card.cValue)
-        assertEquals(null, card.diveGame)
-        assertDoesNotThrow {
-            card.isHidden;
-            card.suit = CardSuit.DIAMONDS;
-            card.cValue = CardValue.SEVEN;
-            card.diveGame = null;
-        }
+        assertFalse(card.isHidden)                  //prüft ob isHidden false ist.
+        assertEquals(CardSuit.DIAMONDS, card.suit)  //prüft ob CardSuit Diamond ist.
+        assertEquals(CardValue.SEVEN, card.value)   //prüft ob CardValue Seven ist.
     }
 }

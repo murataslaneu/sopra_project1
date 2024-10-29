@@ -1,38 +1,23 @@
-package Entity
-
-import entity.Player
-import org.junit.jupiter.api.Assertions.*
-import kotlin.test.Test
-
+package entity
+import kotlin.test.*
 /**
- * Test für Player
- * @param  testPlayer, überprüft die gegebene Eingaben ob die richtig sind
- * @throws IllegalStateException wenn ungültige Eingaben gegeben sind
+ * Diese Klasse enthält Testfälle für die Player Klasse, um sicherzustellen, dass die
+ * Spieler Eigenschaften korrekt initialisiert und geprüft werden.
  */
-
 class PlayerTest {
     @Test
     fun testPlayer() {
-
         val player = Player(
-            name = "Tom",
-            score = 30,
-            swapped = true,
-            hand = mutableListOf(),
-            playerStack = mutableListOf()
+            name = "Tom",                   //für name "Tom" eingegeben
+            score = 30,                     //für score "30" eingegeben
+            swapped = true,                 //für swapped ist true eingegeben
+            hand = mutableListOf(),         //für hand ein mutableList eingegeben
+            playerStack = mutableListOf()   //für playerStack ein mutableList eingegeben
         )
-        assertEquals("Tom", player.name)
-        assertEquals(30,player.score)
-        assertTrue(player.swapped)
-        assertTrue(player.hand.isEmpty())
-        assertTrue(player.playerStack.isEmpty())
-
-        assertDoesNotThrow {
-            player.name = "Tom";
-            player.score = 30;
-            player.swapped = true;
-            player.hand = mutableListOf();
-            player.playerStack = mutableListOf();
-        }
+        assertEquals("Tom", player.name)   //Geprüft, ob Player name "Tom" ist.
+        assertEquals(30,player.score)      //Geprüft, ob Player score "30" ist.
+        assertTrue(player.swapped)                  //Geprüft, ob Player swapped action True ist.
+        assertTrue(player.hand.isEmpty())           //Geprüft, ob Player's Hand leer ist.
+        assertTrue(player.playerStack.isEmpty())    //Geprüft, ob Player's Stack leer ist.
     }
 }
