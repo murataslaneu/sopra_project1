@@ -1,6 +1,6 @@
 package entity
 /**
- * Diese Kalsse repräsenentiert eine Spielkarte.
+ * Diese Klasse [Card] repräsenentiert eine Spielkarte.
  *
  * @property isHidden, ist ein Boolean Wert, der anzeigt, ob die Karte verdeckt ist.
  * @property suit, die Farbe der Karte, represäntiert durch CardSuit.
@@ -12,5 +12,4 @@ class Card(
     var isHidden : Boolean,
     val suit : CardSuit,
     val value : CardValue
-) {
-}
+)

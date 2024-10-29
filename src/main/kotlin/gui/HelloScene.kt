@@ -4,7 +4,9 @@ import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
-
+/**
+ *  [HelloScene]
+ */
 class HelloScene : BoardGameScene(500, 500) {
 
     private val helloLabel = Label(

@@ -1,6 +1,6 @@
 package entity
 /**
- * Diese Kalsse repräsenentiert eine Spielkarte.
+ * Diese Kalsse [DiveGame] repräsenentiert eine Spielkarte.
  *
  * @property currentPlayer, der Spieler, der gerade am Zug ist.
  * @property playerList, die Liste aller Spieler, die am Spiel teilnehmen.
@@ -16,5 +16,4 @@ class DiveGame(
     var discardStack : MutableList<Card>,
     var trio : MutableList<Card>,
     var drawStack : MutableList<Card>
-){
-}
+)

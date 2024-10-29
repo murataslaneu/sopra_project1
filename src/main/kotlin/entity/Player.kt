@@ -1,6 +1,6 @@
 package entity
 /**
- * Diese Kalsse repräsenentiert einen Spieler (Player) im Spiel.
+ * Diese Kalsse repräsenentiert einen Spieler [Player] im Spiel.
  *
  * @property name, Name des Spielers.
  * @property score, aktuell Punktestand des Spielers.
@@ -16,5 +16,4 @@ class Player(
     var swapped : Boolean,
     val hand : MutableList<Card?>,
     val playerStack : MutableList<Card?>
-) {
-}
+)
