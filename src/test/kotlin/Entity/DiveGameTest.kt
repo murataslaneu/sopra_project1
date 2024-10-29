@@ -1,7 +1,7 @@
 package entity
 import kotlin.test.*
 /**
- * Diese Klasse enthält Testfälle für die DiveGame Klasse, um sicherzustellen, dass die
+ * Diese Klasse enthält Testfälle für die [DiveGame] Klasse, um sicherzustellen, dass die
  * Eigenschaften des Spiels korrekt initialisiert und geprüft werden.
  */
 class DiveGameTest {

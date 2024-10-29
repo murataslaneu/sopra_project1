@@ -1,7 +1,7 @@
 package entity
 import kotlin.test.*
 /**
- * Diese Klasse enthält Testfälle für die Player Klasse, um sicherzustellen, dass die
+ * Diese Klasse enthält Testfälle für die [Player] Klasse, um sicherzustellen, dass die
  * Spieler Eigenschaften korrekt initialisiert und geprüft werden.
  */
 class PlayerTest {
