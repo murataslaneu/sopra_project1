@@ -1,4 +1,5 @@
 import gui.SopraApplication
+
 /**
  * [main] Funktion.
  */

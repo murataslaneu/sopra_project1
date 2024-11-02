@@ -1,4 +1,5 @@
 package entity
+import java.util.*
 import kotlin.test.*
 /**
  * Diese Klasse enthält Testfälle für die [DiveGame] Klasse, um sicherzustellen, dass die
@@ -15,7 +16,7 @@ class DiveGameTest {
             playerList = mutableListOf(),   //Für Player List ein mutableList eingegeben.
             discardStack = mutableListOf(), //Für discardStack ein mutableList eingegeben.
             trio = mutableListOf(),         //Für trio ein mutableList eingegeben.
-            drawStack = mutableListOf()     //Für drawStack List ein mutableList eingegeben.
+            drawStack = Stack()     //Für drawStack ein Stack eingegeben.
         )
         assertEquals(game.currentPlayer, game.currentPlayer)    //Geprüft, ob aktuelle Spieler korrekt ist.
         assertTrue(game.playerList.isEmpty())                   //Geprüft, ob Player List leer ist.

@@ -1,4 +1,7 @@
 package entity
+
+import java.util.*
+
 /**
  * Diese Kalsse [DiveGame] repräsenentiert eine Spielkarte.
  *
@@ -12,8 +15,8 @@ package entity
  */
 class DiveGame(
     var currentPlayer: Player,
-    var playerList: MutableList<Player>,
-    var discardStack : MutableList<Card>,
-    var trio : MutableList<Card>,
-    var drawStack : MutableList<Card>
+    val playerList: MutableList<Player>,
+    val discardStack : MutableList<Card>,
+    val trio : MutableList<Card>,
+    val drawStack : Stack<Card> // kann auch mutableList sein
 )
