@@ -16,35 +16,35 @@ interface Refreshables {
      *  Verwendet für die Benutzeroberfläche oder andere
      *  Anzeigen für den Spielstart zu aktualisieren.
      */
-    fun refreshAfterGameStart()
+    fun refreshAfterGameStart(){}
 
     /**
      * Wird aufgerufen, wenn ein neuer Zug beginnt.
      * Verwendet für die Benutzeroberfläche für den
      * Start eines neuen Zugs zu aktualisieren.
      */
-    fun refreshAfterTurnStart()
+    fun refreshAfterTurnStart(){}
 
     /**
      * Wird aufgerufen, wenn ein Zug endet.
      * Verwendet für die Benutzeroberfläche für das
      * Ende eines Zugs zu aktualisieren.
      */
-    fun refreshAfterTurnEnds()
+    fun refreshAfterTurnEnds(){}
 
     /**
      * Wird aufgerufen, nachdem ein Spieler eine Karte gespielt hat.
      *
      * @param playedCard, Karte, die vom Spieler gespielt wurde.
      */
-    fun refreshAfterCardPlayed(playedCard: Card)
+    fun refreshAfterCardPlayed(playedCard: Card){}
 
     /**
      * Wird aufgerufen, nachdem eine Karte gezogen wurde.
      *
      * @param card, Karte, die vom Nachziehstapel gezogen wurde.
      */
-    fun refreshAfterCardDrawn(card: Card)
+    fun refreshAfterCardDrawn(card: Card){}
 
     /**
      * Wird aufgerufen, nachdem zwei Karten getauscht wurden.
@@ -52,7 +52,7 @@ interface Refreshables {
      * @param trioCard, Karte, die im Trio ist.
      * @param handCard, Karte, die aus der Hand des Spielers stammt.
      */
-    fun refreshAfterCardSwap(trioCard: Card, handCard: Card)
+    fun refreshAfterCardSwap(trioCard: Card, handCard: Card){}
 
     /**
      * Wird aufgerufen, nachdem eine Karte aus der Hand des
@@ -60,13 +60,13 @@ interface Refreshables {
      *
      * @param handCard, Karte, die abgeworfen wurde.
      */
-    fun refreshAfterCardDiscarded(handCard: Card)
+    fun refreshAfterCardDiscarded(handCard: Card){}
 
     /**
      * Wird aufgerufen, nachdem das Spiel endet.
      * Verwendet für die Benutzeroberfläche für
      * das Spielende zu aktualisieren.
      */
-    fun refreshAfterGameEnds()
+    fun refreshAfterGameEnds(){}
 
 }

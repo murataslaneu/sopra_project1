@@ -20,6 +20,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     val trio = rootService.gameService.currentGame.trio
     val drawStack = rootService.gameService.drawStack
     var swapped = rootService.gameService.currentGame.currentPlayer.swapped
+
     /**
      * [playCard] erlaubt es einem Spieler, eine Karte aus seiner Hand zu spielen.
      * Diese Karte wird in die Mitte gelegt, sofern sie den Spielregeln entspricht.
@@ -31,10 +32,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalArgumentException, wenn die Karte nicht gültig ist.
      */
     fun playCard(card: Card){
+        checkNotNull(rootService.currentGame)
+
         //Prüfen, ob alle Karten gleiche Farbe haben
         val allSameSuit = trio.all { it.suit == trio[0].suit }
+
         //Prüfen, ob alle Karten gleiche Zahl haben
         val allSameValue = trio.all { it.value == trio[0].value }
+
         /**
          * Wenn Spieler hat Karten in Hand, dann darf Spieler eine Karte spielen in der Mitte
          * dann wird diese Karte gelöscht (von Hand des Spielers) und wird in der Mitte gelegt
@@ -49,6 +54,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                         throw IllegalArgumentException("Die Karte ist ungültig")
                     }
                 }
+
                 /**
                  * Wenn trio getriggert ist (trio == 3), wird Score für currentPlayer geändert
                  * und Mitte wir gelehrt.
@@ -77,6 +83,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
     }
+
     /**
      * [drawCard] hilft Spieler, eine Karte von drawStack zu ziehen
      */
@@ -90,11 +97,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             //endGame
             //return
         }*/
+
         if(currentPlayer.hand.size > 8){
             discardCard(currentPlayer.hand.last()!!)
         }
         onAllRefreshables { refreshAfterCardDiscarded(currentPlayer.hand.last()!!) }
     }
+
     /**
      * [swapCard] hilft Spieler, von Hand des Spielers (aktuellen) eine Karte zu ändern.
      *
@@ -114,6 +123,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             rootService.gameService.endTurn()
         }*/
     }
+
     /**
      * Entfernt eine angegebene Karte aus der Hand des Spielers und
      * fügt sie zum Ablagestapel.

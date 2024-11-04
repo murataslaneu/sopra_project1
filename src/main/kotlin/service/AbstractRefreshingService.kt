@@ -25,6 +25,8 @@ abstract class AbstractRefreshingService {
      * Führt die übergebene Methode (normalerweise ein Lambda) auf allen
      * [Refreshables] aus, die bei der Dienstklasse registriert sind,
      * die diesen [AbstractRefreshingService] erweitert.
+     *
+     * @param method, die hinzuzufügenden [Refreshables]
      */
     fun onAllRefreshables(method: Refreshables.() -> Unit) {
         refreshables.forEach() {it!!.method()} // Check for "!!"

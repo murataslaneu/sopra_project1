@@ -4,7 +4,6 @@ import entity.Player
 import entity.Card
 import entity.DiveGame
 import java.util.*
-import gui.Refreshables
 
 
 /**
@@ -28,6 +27,9 @@ class GameService(private val service: RootService) : AbstractRefreshingService(
     lateinit var currentGame: DiveGame
     private val discardStack = Stack<Card>()
     private val cardToDiscard = currentPlayer.hand.last() //Letzte addierte Karte 8 + 1
+    //val playerCards = mutableListOf<Card>()
+    //val playerCardsIsHidden =
+
     /**
      * [startNewGame] startet ein neues Spiel mit den angegebenen Spielernamen.
      *
@@ -37,21 +39,32 @@ class GameService(private val service: RootService) : AbstractRefreshingService(
     fun startNewGame(playerNames: List<String>) {
         val player1 = playerNames[0]
         val player2 = playerNames[1]
+
         if(player1 == player2 || listOf(playerNames).isEmpty() ){
             throw IllegalArgumentException("playerNames are same or empty(or have blanks)")
         }
         if(playerNames.size != 2){
             throw IllegalArgumentException("There are more or less than two players")
         }
+
         val players = playerNames.map { Player(it, 0, false,
             mutableListOf(), mutableListOf()) }
+
         currentPlayer = players.shuffled().first()
         drawStack.shuffle()
+
         players.forEach { player -> repeat(5) {
                 player.hand.add(drawStack.pop())
             }
         }
+
+        //das aktuelle Spiel des Stammdienstes auf das erstellte Spiel setzen
+        service.currentGame = currentGame
+
+        //trigger refresh für GUI damit neu Spiel startet
         onAllRefreshables { refreshAfterGameStart() }
+
+        //Die erste Runde des Spiels wird automatisch gestartet.
         startTurn()
     }
     /**
@@ -63,6 +76,8 @@ class GameService(private val service: RootService) : AbstractRefreshingService(
      */
     fun startTurn(){
         val cardToPlay = currentPlayer.hand.first()
+        checkNotNull(currentGame)
+        onAllRefreshables { refreshAfterTurnStart() }
         /*if(currentPlayer.hand.size <= 8 && !service.playerActionService.swapped ){
             service.playerActionService.swapCard()
         } else {
@@ -70,28 +85,33 @@ class GameService(private val service: RootService) : AbstractRefreshingService(
                 service.playerActionService.playCard(cardToPlay!!)
             }
         }*/
+
         if(currentPlayer.hand.isNotEmpty()){
             service.playerActionService.playCard(cardToPlay!!)
             onAllRefreshables { refreshAfterCardPlayed(cardToPlay) }
         }
+
         if(currentPlayer.hand.size > 8){
             discardStack.push(cardToDiscard)
             currentPlayer.hand.remove(cardToDiscard)
             onAllRefreshables { refreshAfterCardDiscarded(cardToDiscard!!) }
         }
-        endTurn()
     }
     /**
      * [endTurn] Beendet den Zug des aktuellen Spielers und überprüft, ob
      * Karten abgeworfen werden müssen, falls der Spieler 8+ Karten hat.
      */
     fun endTurn(){
+        checkNotNull(currentGame)
+
         if(currentPlayer.hand.size > 8){
             discardStack.push(cardToDiscard)
             currentPlayer.hand.remove(cardToDiscard)
             onAllRefreshables { refreshAfterTurnEnds() }
         }
+        startTurn()
     }
+
     /**
      * Erstellt und gibt einen neuen Nachziehstapel zurück.
      *

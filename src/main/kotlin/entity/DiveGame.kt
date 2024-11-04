@@ -15,8 +15,8 @@ import java.util.*
  */
 class DiveGame(
     var currentPlayer: Player,
-    val playerList: MutableList<Player>,
-    val discardStack : MutableList<Card>,
-    val trio : MutableList<Card>,
-    val drawStack : Stack<Card> // kann auch mutableList sein
+    var playerList: MutableList<Player>,
+    var discardStack : MutableList<Card>,
+    var trio : MutableList<Card>,
+    var drawStack : Stack<Card> // kann auch mutableList sein
 )
