@@ -1,6 +1,6 @@
 package service
 
-import entity.*
+import entity.Card
 
 /**
  * [PlayerActionService] ist verantwortlich für die verwaltung der
@@ -9,17 +9,8 @@ import entity.*
  *
  * @param rootService, Hauptdienst, der Zugriff auf alle andere Dienstklassen
  * und den aktuellen Spielstatus bietet.
- *
- * @property currentPlayer, zeigt uns der aktuelle Spieler, der Aktionen durchführt.
- * @property trio, trio Sammlung von Karten, die in der Mitte des Spiels liegt.
- * @property drawStack, Stapel, von dem die Spieler Karten ziehen können.
- * @property swapped, Boolean, das angibt, ob eine Karte getauscht wurde (für jede Spieler).
  */
-class PlayerActionService(private val rootService: RootService) : AbstractRefreshingService() {
-    var currentPlayer = rootService.gameService.currentPlayer
-    val trio = rootService.gameService.currentGame.trio
-    val drawStack = rootService.gameService.drawStack
-    var swapped = rootService.gameService.currentGame.currentPlayer.swapped
+class PlayerActionService(private val rootService: RootService): AbstractRefreshingService() {
 
     /**
      * [playCard] erlaubt es einem Spieler, eine Karte aus seiner Hand zu spielen.
@@ -27,81 +18,51 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Die Karte muss sich auf der Hand des Spielers befinden oder der Nachziehstapel darf nicht leer sein.
      *
      * @param card, die Karte, die gespielt werden soll.
-     *
-     * @throws IllegalArgumentException, wenn das Spiel nicht läuft oder wenn der Spieler nicht an der Reihe ist.
-     * @throws IllegalArgumentException, wenn die Karte nicht gültig ist.
      */
-    fun playCard(card: Card){
-        checkNotNull(rootService.currentGame)
+    fun playCard(card: Card) {
+        val game = rootService.currentGame
+        checkNotNull(game)
 
-        //Prüfen, ob alle Karten gleiche Farbe haben
-        val allSameSuit = trio.all { it.suit == trio[0].suit }
+//        val haveCard = game.currentPlayer.hand.size
+//        requireNotNull(haveCard) { "Need any Card to play" }
 
-        //Prüfen, ob alle Karten gleiche Zahl haben
-        val allSameValue = trio.all { it.value == trio[0].value }
+        val playStack = game.trio
+        game.currentPlayer.hand.remove(card)
+        playStack.add(card)
+        onAllRefreshables { refreshAfterCardPlayed(card) }
 
-        /**
-         * Wenn Spieler hat Karten in Hand, dann darf Spieler eine Karte spielen in der Mitte
-         * dann wird diese Karte gelöscht (von Hand des Spielers) und wird in der Mitte gelegt
-         */
-        if(currentPlayer.hand.size > 0){
-            currentPlayer.hand.remove(card)
-            trio.add(card)
-            onAllRefreshables { refreshAfterCardPlayed(card) }
-                if(trio.size < 3 && trio.size != 0){
-                    val middleCards = trio.last()
-                    if(card.suit != middleCards.suit && card.value != middleCards.value){
-                        throw IllegalArgumentException("Die Karte ist ungültig")
-                    }
-                }
-
-                /**
-                 * Wenn trio getriggert ist (trio == 3), wird Score für currentPlayer geändert
-                 * und Mitte wir gelehrt.
-                 */
-                if(trio.size == 3){
-                    if(allSameSuit || allSameValue){
-                        currentPlayer.score += if(allSameValue) 20 else 5
-                        //Addieren trio Karten in Stack des Spielers
-                        currentPlayer.playerStack.addAll(trio)
-                        trio.clear()
-                        onAllRefreshables { refreshAfterCardPlayed(card) }
-                    }
-                }
-                rootService.gameService.endTurn()
-                onAllRefreshables { refreshAfterTurnEnds() }
-            }else{
-                drawCard()
-                onAllRefreshables { refreshAfterCardDrawn(card) }
-            }
-
-        /**
-         * Überprüft, ob der Spieler nicht an der Reihe ist.
-         */
-        if(currentPlayer != rootService.gameService.currentPlayer){
-            throw IllegalArgumentException("Spieler ist nicht an der Reihe")
+        if(game.currentPlayer.hand.isEmpty()) {
+            drawCard()
+            return
         }
-
+        if(game.currentPlayer.hand.size > 8) {
+            discardCard(card)
+            onAllRefreshables { refreshAfterCardDiscarded(card) }
+        }
+        onAllRefreshables { refreshAfterTurnEnds() }
     }
 
     /**
      * [drawCard] hilft Spieler, eine Karte von drawStack zu ziehen
      */
-    fun drawCard(){
-        if(drawStack.isNotEmpty()){
-            val drawnCard = drawStack.pop()
-            currentPlayer.hand.add(drawnCard)
-            onAllRefreshables { refreshAfterCardDrawn(drawnCard) }
-            //if spieler dieses Kart spielen möchte Anweisung addieren!
-        }/*else{
-            //endGame
-            //return
-        }*/
+    fun drawCard() {
+        val game = rootService.currentGame
+        checkNotNull(game)
 
-        if(currentPlayer.hand.size > 8){
-            discardCard(currentPlayer.hand.last()!!)
+        if(game.drawStack.isNotEmpty()) {
+            val drawnCard = game.drawStack.pop()
+            game.currentPlayer.hand.add(drawnCard)
+
+            onAllRefreshables {
+                refreshAfterCardDrawn(drawnCard)
+                refreshAfterTurnEnds()
+            }
+        } else {
+            if(game.currentPlayer.hand.none()) {
+                onAllRefreshables { refreshAfterTurnEnds() }
+            }
         }
-        onAllRefreshables { refreshAfterCardDiscarded(currentPlayer.hand.last()!!) }
+        return
     }
 
     /**
@@ -110,18 +71,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @param playerCard, die Karte, die getauscht werden soll (von Hand des Spielers).
      * @param trioCard, die Karte im Trio, die der Spieler erhalten möchte.
      */
-    fun swapCard(playerCard: Card, trioCard: Card){
-        if(currentPlayer.hand.contains(playerCard) && trio.contains(trioCard)){
-            currentPlayer.hand.remove(playerCard)
-            currentPlayer.hand.add(trioCard)
-            trio.remove(trioCard)
-            trio.add(playerCard)
-            swapped = true
-            onAllRefreshables { refreshAfterCardSwap(playerCard,trioCard) }
+    fun swapCard(playerCard: Card, trioCard: Card) {
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        if(playerCard.suit == trioCard.suit || playerCard.value == trioCard.value) {
+            onAllRefreshables { refreshAfterCardSwap(playerCard, trioCard) }
+        } else {
+            onAllRefreshables { refreshAfterTurnEnds() }
         }
-        /*if(swapped == true) {
-            rootService.gameService.endTurn()
-        }*/
     }
 
     /**
@@ -130,11 +88,17 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      *
      * @param playerCard, die Karte, die abgeworfen werden soll.
      */
-    private fun discardCard(playerCard: Card){
-        if(currentPlayer.hand.contains(playerCard)){
-            currentPlayer.hand.remove(playerCard)
-            rootService.gameService.currentGame.discardStack.add(playerCard)
+    private fun discardCard(playerCard: Card) {
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        val discardStack = game.discardStack
+        val discardedCard = discardStack.last()
+        if(game.currentPlayer.hand.size > 8){
+            game.currentPlayer.hand.remove(playerCard)
+            onAllRefreshables { refreshAfterCardDiscarded(discardedCard) }
+        } else {
+            onAllRefreshables { refreshAfterTurnEnds() }
         }
-        onAllRefreshables { refreshAfterCardDiscarded(playerCard) }
     }
 }

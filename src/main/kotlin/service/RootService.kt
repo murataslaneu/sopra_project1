@@ -3,20 +3,24 @@ package service
 import entity.*
 import gui.Refreshables
 
+/**
+ *
+ * Hauptklasse der Dienstebene für das DiveGame. Ermöglicht den Zugriff
+ * auf alle anderen Dienstklassen und enthält den [currentGame] Status,
+ * auf den diese Dienste zugreifen können.
+ *
+ * [gameService] gameService
+ * [playerActionService] Player action service
+ */
 class RootService {
-    /**
-     *
-     * Hauptklasse der Dienstebene für das DiveGame. Ermöglicht den Zugriff
-     * auf alle anderen Dienstklassen und enthält den [currentGame] Status,
-     * auf den diese Dienste zugreifen können.
-     *
-     * [gameService] gameService
-     * [playerActionService] Player action service
-     * [currentGame] Aktuelles Spiel kann Null sein, weil nicht gestartet ist.
-     */
+
     val gameService = GameService(this)
     val playerActionService = PlayerActionService(this)
-    var currentGame : DiveGame? = null //Private??
+
+    /**
+     * Das derzeit aktive Spiel. Kann null sein, wenn noch kein Spiel begonnen hat.
+     */
+    var currentGame : DiveGame? = null
 
     /**
      * Fügt den angegebenen [newRefreshable] zu allen
