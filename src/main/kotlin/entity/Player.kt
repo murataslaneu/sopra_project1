@@ -14,6 +14,6 @@ class Player(
     val name : String,
     var score : Int,
     var swapped : Boolean,
-    val hand : MutableList<Card?>,
+    var hand : MutableList<Card?>,
     val playerStack : MutableList<Card?>
 )

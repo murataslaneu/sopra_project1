@@ -1,6 +1,6 @@
 package service
 
-import entity.Card
+import entity.*
 
 /**
  * [PlayerActionService] ist verantwortlich für die verwaltung der
@@ -22,9 +22,6 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
     fun playCard(card: Card) {
         val game = rootService.currentGame
         checkNotNull(game)
-
-//        val haveCard = game.currentPlayer.hand.size
-//        requireNotNull(haveCard) { "Need any Card to play" }
 
         val playStack = game.trio
         game.currentPlayer.hand.remove(card)
@@ -57,12 +54,11 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
                 refreshAfterCardDrawn(drawnCard)
                 refreshAfterTurnEnds()
             }
-        } else {
-            if(game.currentPlayer.hand.none()) {
-                onAllRefreshables { refreshAfterTurnEnds() }
+        }else {
+            if(game.playerList[0].hand.isEmpty() && game.playerList[1].hand.isEmpty() ) {
+                rootService.gameService.isGameEnded()
             }
         }
-        return
     }
 
     /**
@@ -75,7 +71,16 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         val game = rootService.currentGame
         checkNotNull(game)
 
+        //Wenn der Spieler eine Karte der gleichen Serie oder des gleichen Wertes hat
         if(playerCard.suit == trioCard.suit || playerCard.value == trioCard.value) {
+            playerCard.isHidden = true
+            trioCard.isHidden = false
+
+            //Tauschen Karten
+            game.currentPlayer.hand.remove(playerCard)
+            game.trio.add(playerCard)
+            game.trio.remove(trioCard)
+            game.currentPlayer.hand.add(trioCard)
             onAllRefreshables { refreshAfterCardSwap(playerCard, trioCard) }
         } else {
             onAllRefreshables { refreshAfterTurnEnds() }

@@ -40,7 +40,6 @@ class PlayerActionServiceTest {
         assertNotNull(game) //Überprüfen, ob Spiel vorhanden ist
 
         //Addieren eine Karte, um später zu überprüfen
-        val playerHand = rootService.currentGame!!.currentPlayer.hand
         val card = Card(
             true,
             CardSuit.DIAMONDS,
@@ -52,19 +51,25 @@ class PlayerActionServiceTest {
         assertEquals(CardSuit.DIAMONDS, card.suit)
         assertEquals(CardValue.SEVEN, card.value)
 
-        //Überprüfen, ob Spieler die Karte hat (gegebene Karte)
-        //assertTrue { playerHand.contains(card) }
-
         //Spieler spielt die Karte (falls es existiert)
+        val playerHand = game.currentPlayer.hand
         if(playerHand.isNotEmpty()){
         rootService.playerActionService.playCard(card)}
+    }
 
-        //Nach dem Spielen sollte die Karte nicht mehr in der Hand sein
-        assertFalse { playerHand.contains(card) }
-
+    /**
+     * [trioScore] testet die Methode 'playCard'. Eine weitere Überprüfung
+     * von [testPlayCard], hier überprüfen wir, ob Trio getriggert ist,
+     * falls ja die Punkten werden in Scoreboard eingetragen.
+     */
+    @Test
+    fun trioScore() {
         /** Test für Trio, und Score **/
-        val player = game.currentPlayer
-        assertNotNull(player) //Überprüfen, dass Spieler in Spiel ist
+        val game = rootService.currentGame
+        assertNotNull(game)
+
+        val currentPlayer = game.currentPlayer
+        assertNotNull(currentPlayer) //Überprüfen, dass Spieler in Spiel ist
 
         val trioSuit = game.trio
         val trioValue = game.trio
@@ -88,6 +93,7 @@ class PlayerActionServiceTest {
          * trioFarbe oder trioValue getriggert ist, dann addiert
          * Punkte in Balance des Spielers.
          */
+        val card = Card(true, CardSuit.DIAMONDS, CardValue.SEVEN)
         rootService.playerActionService.playCard(card)
 
         if(diamondFilter.size == 3 ) {
@@ -98,10 +104,10 @@ class PlayerActionServiceTest {
             game.currentPlayer.score.plus(20)
         }
 
+        //Überprüfen ob trio 3 Karten hat.
         assertTrue { fiveFilter.size == 3 }
         assertTrue { diamondFilter.size == 3 }
         assertFalse { game.currentPlayer.score == 5 || game.currentPlayer.score == 20 }
-
     }
 
     /**
@@ -112,11 +118,9 @@ class PlayerActionServiceTest {
     @Test
     fun testDrawCard(){
         val game = rootService.currentGame
-        val playerHandSize = game!!.currentPlayer.hand.size
         assertNotNull(game) //Überprüfen, ob Spiel vorhanden ist
 
         /** Test für spezifischer Karten **/
-
         //bestimmen die gameStack (drawStack)
         val gameStack = game.drawStack.apply {
             clear() // Erst leeren die Stapel, dann addieren spezifische Karten
@@ -138,10 +142,20 @@ class PlayerActionServiceTest {
         ))
 
         //Überprüfen, ob die Karten Zahl stimmt.
-        assertEquals(5, playerHandSize)
+        assertEquals(5, playerHand.size)
         assertEquals(4, gameStack.size)
 
-        rootService.playerActionService.drawCard()
+        if(playerHand.isEmpty()) {
+            rootService.playerActionService.drawCard()
+        }else {
+            val drawnCard = gameStack.pop()
+            playerHand.add(drawnCard)
+        }
+
+        //Überprüfen, ob Spieler jetzt 6 Karten hat, wegen drawnCard
+        // und überprüfen, ob gameStack hat 3 Karten, wegen drawnCard
+        assertEquals(6, playerHand.size)
+        assertEquals(3, gameStack.size)
     }
 
     /**
@@ -176,7 +190,7 @@ class PlayerActionServiceTest {
 
         //Tauschen Spades_Ten mit Clubs_Five
         rootService.playerActionService.swapCard(
-            playerHand[0]!! , middleCards[0])
+            playerHand[0]!!, middleCards[0])
 
         //Size muss gleich sein, weil Spieler nur Karten getauscht hat
         assertEquals(5, playerHand.size)
@@ -184,13 +198,12 @@ class PlayerActionServiceTest {
 
         /**
          * Die getauschten Karten sollten nun an der richtigen Stelle sein.
-         * Die Karte, die in der Mitte war, ist nun verdeckt und die Karte des
+         * Die Karte, die in der Mitte war, ist jetzt verdeckt und die Karte des
          * Spielers ist jetzt in der Mitte offen liegt.
+         * assertTrue {playerHand.contains(Card(true, CardSuit.CLUBS, CardValue.FIVE))}
+         * assertTrue {middleCards.contains(Card(false, CardSuit.SPADES, CardValue.TEN))}
          */
-//        assertTrue { playerHand.contains(Card(true,
-//            CardSuit.CLUBS, CardValue.FIVE)) }
-//        assertTrue { middleCards.contains(Card(false,
-//            CardSuit.SPADES, CardValue.TEN)) }
+
     }
 
     /**

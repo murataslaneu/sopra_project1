@@ -9,12 +9,10 @@ import org.junit.jupiter.api.assertDoesNotThrow
  * Stellt sicher, dass grundlegende Spielaktionen wie das Starten eines neuen Spiels,
  * das Starten und Beenden eines Zuges sowie das Erstellen des Ziehstapels korrekt funktionieren.
  *
- * @property defaultHandSize, wie viel ein Spieler Karten haben wird, am Anfang des Spiels
  * @property service ist RootService
  * @property testRefreshable ist TestRefreshable(service)
  */
 class GameServiceTest {
-    private val defaultHandSize = 5
     private var service = RootService()
     private var testRefreshable = TestRefreshable(service)
 
@@ -42,12 +40,35 @@ class GameServiceTest {
         val game = service.currentGame
         assertNotNull(game)
 
+        /** Überprüfen ob playerStack 52 hat **/
+        val player1Hand = game.playerList[0].hand
+        val player2Hand = game.playerList[1].hand
+
+        val playerStack = player1Hand + player2Hand + game.drawStack
+        assertEquals(52, playerStack.size)
+                        /****/
+
+        val drawStack = game.drawStack
+        //Überprüfung, ob Stack 42 Karten hat
+        assertEquals(42, drawStack.size)
+
+        //Hier erst löschen wir, weil in StartGame steht, dass Spieler bekommen 5 Karten
+        game.currentPlayer.hand.clear()
+        repeat(5) {
+            if(drawStack.isNotEmpty()) {
+                val drawnCard = drawStack.pop()
+                game.currentPlayer.hand.add(drawnCard)
+            }
+        }
+        assertEquals(5, game.currentPlayer.hand.size)
+
+        //Erstellen empty Lists
         game.trio = emptyList<Card>().toMutableList()
         game.discardStack = emptyList<Card>().toMutableList()
 
-        //Überprüfung, ob Stack es 52 Karten gibt und nicht leer ist
-        //assertEquals(52, defaultRandomCardList.size)
-        //assertTrue(defaultRandomCardList.isEmpty())
+        //Überprüfung, ob Stack 42-5=37 Karten gibt und nicht leer ist
+        assertEquals(37, drawStack.size)
+        assertFalse{drawStack.isEmpty()}
 
         //Test: Überprüfung, ob die startNewGame Methode ohne Probleme funktioniert
         assertDoesNotThrow { service.gameService.startNewGame(listOf("Tom", "Alice")) }
@@ -56,7 +77,6 @@ class GameServiceTest {
         assertTrue { testRefreshable.refreshAfterGameStart }
         assertEquals(0, game.trio.size)
         assertEquals(0, game.discardStack.size)
-        assertEquals(5, defaultHandSize)
 
         //Test: Überprüfung der Spieler
         assertEquals(2, game.playerList.size)
@@ -74,20 +94,23 @@ class GameServiceTest {
      */
     @Test
     fun testStartTurn(){
+        val game = service.currentGame
+        assertNotNull(game)
 
         //Nehmen wir der aktuelle Spieler, der am Anfang an der Reihe ist
-        val firstPLayer = service.currentGame?.currentPlayer
+        val firstPLayer = game.currentPlayer
         assertNotNull(firstPLayer) //Überprüfung, ob es erste Spieler dran ist.
 
         //Test: Überprüfung, ob die startTurn Methode ohne Probleme funktioniert
         assertDoesNotThrow { service.gameService.startTurn() }
 
         //Test: Prüfen, ob der aktuelle Spieler am Zug ist
-        val currentPLayer = service.currentGame?.currentPlayer
+        val currentPLayer = game.currentPlayer
         assertNotNull(currentPLayer) //currentPlayer kann nicht null sein.
         assertEquals(firstPLayer, currentPLayer) //Beide müssen gleich sein.
-//        assertTrue{testRefreshable.refreshAfterTurnStart}
-        }
+    }
+
+
 
     /**
      * [testEndTurn] testet die Methode 'endTurn', die den Zug des aktuellen Spielers beendet.
@@ -97,23 +120,19 @@ class GameServiceTest {
     fun testEndTurn(){
 
         val game = service.currentGame
-        //val playerCards = service.currentGame.
         assertNotNull(game) //Spiel muss noch vorhanden sein.
 
-        //val firstPlayer = game.currentPlayer
-        assertDoesNotThrow { service.gameService.endTurn() }
+        //Überprüfen, ob erste ausgewählte Spieler im Spiel dran ist.
+        val firstPlayer = game.currentPlayer
+        assertEquals(game.currentPlayer, firstPlayer)
 
-        //val nextPlayer = game.currentPlayer
-        //Erste spieler muss geändert sein, also nächste Spieler dran ist.
-        //assertNotEquals(firstPlayer, nextPlayer)
+        //Karten verdecken nach EndTurn für aktuelle Spieler, damit gegen Spieler, die Karte nicht sieht
+        service.gameService.endTurn()
+        val playerCards = game.currentPlayer.hand.all { it!!.isHidden }
+        assertTrue{ playerCards }
 
-        //assertEquals() prüfen ob nicht mehr 8 Karten in Hand ist
-
-        //Karten verdecken nach EndTurn für aktuelle Spieler
-        //assertTrue { isHidden } damit gegen Spieler, die Karte nicht sieht
-
-//        assertTrue { game.currentPlayer.swapped }
-//        assertTrue(testRefreshable.refreshAfterTurnEnds)
+        //Test für refreshable Turn Ends
+        assertTrue(testRefreshable.refreshAfterTurnEnds)
         assertDoesNotThrow {service.gameService.endTurn()}
     }
 
@@ -126,18 +145,19 @@ class GameServiceTest {
         val game = service.currentGame
         assertNotNull(game) //Spiel muss noch vorhanden sein.
 
+        val drawStack = game.drawStack
+
+        //Überprüfung, ob in Stack 42 Karten gibt und nicht leer ist
+        assertTrue(drawStack.isNotEmpty())
+        assertEquals(42, drawStack.size)
+
+        //Überprüfung, ob drawStack gelehrt werden
         game.drawStack.clear()
         assertEquals(0, game.drawStack.size)
 
-        /** Füllen Stack mit Karten mithilfe shuffled  **/
-//        game.drawStack = CardSuit.values().flatMap { suit ->
-//            CardValue.values().map { value ->
-//                Card(true, suit = suit, value = value)
-//            }
-//        }.shuffled() as Stack<Card>
+        //Weil, drawStack leer ist, muss isGameEnded true sein
+        service.gameService.isGameEnded()
+        assertTrue { service.gameService.isGameEnded() }
 
-        //Überprüfung, ob Stack es 52 Karten gibt und nicht leer ist
-//        assertEquals(52, game.drawStack.size)
- //       assertTrue(game.drawStack.isNotEmpty())
     }
 }
