@@ -56,7 +56,6 @@ enum class CardValue {
 //        fun shortDeck(): Set<CardValue> {
 //            return EnumSet.of(ACE, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING)
 //        }
-//
 //    }
 
     companion object {
@@ -67,8 +66,4 @@ enum class CardValue {
             return EnumSet.of(TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE)
         }
     }
-
-
-
-
 }

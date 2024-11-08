@@ -54,6 +54,7 @@ class PlayerActionServiceTest {
         //Spieler spielt die Karte (falls es existiert)
         val playerHand = game.currentPlayer.hand
         if(playerHand.isNotEmpty()){
+            if(game.trio.size in 1..2)
         rootService.playerActionService.playCard(card)}
     }
 
@@ -93,7 +94,7 @@ class PlayerActionServiceTest {
          * trioFarbe oder trioValue getriggert ist, dann addiert
          * Punkte in Balance des Spielers.
          */
-        val card = Card(true, CardSuit.DIAMONDS, CardValue.SEVEN)
+        val card = Card(false, CardSuit.DIAMONDS, CardValue.SEVEN)
         rootService.playerActionService.playCard(card)
 
         if(diamondFilter.size == 3 ) {
@@ -156,6 +157,15 @@ class PlayerActionServiceTest {
         // und überprüfen, ob gameStack hat 3 Karten, wegen drawnCard
         assertEquals(6, playerHand.size)
         assertEquals(3, gameStack.size)
+
+        val gameStack1left = game.drawStack.apply {
+            clear() // Erst leeren die Stapel, dann addieren spezifische Karten
+            push(Card(true, CardSuit.CLUBS, CardValue.FIVE))
+        }
+        game.drawStack = gameStack1left
+        rootService.playerActionService.drawCard()
+        game.currentPlayer.score = 20
+        rootService.gameService.gameEndScore()
     }
 
     /**
@@ -225,16 +235,20 @@ class PlayerActionServiceTest {
             Card(true, CardSuit.SPADES, CardValue.TWO),
             Card(true, CardSuit.DIAMONDS, CardValue.QUEEN),
             Card(true, CardSuit.HEARTS, CardValue.JACK),
-            Card(true, CardSuit.DIAMONDS, CardValue.SIX)
+            Card(true, CardSuit.DIAMONDS, CardValue.SIX),
+            Card(true, CardSuit.DIAMONDS, CardValue.SEVEN),
+            Card(true, CardSuit.HEARTS, CardValue.EIGHT),
+            Card(true, CardSuit.CLUBS, CardValue.EIGHT),
+            Card(true, CardSuit.CLUBS, CardValue.TEN)
         ))
 
         //discardCard ist private, deswegen entfernen wir Karte wie unten
         val cardToDiscard = playerHand[2]
-        playerHand.remove(cardToDiscard)
-        discardStack.add(cardToDiscard!!)
+        rootService.playerActionService.discardCard(cardToDiscard!!)
 
-        assertEquals(4,playerHand.size)
+        assertEquals(8,playerHand.size)
         assertEquals(1, discardStack.size)
+        println(discardStack)
 
         //Spieler enthält die Karte nicht mehr, aber discardStack enthält
         assertFalse { playerHand.contains(cardToDiscard) }

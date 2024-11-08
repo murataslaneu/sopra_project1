@@ -24,6 +24,8 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
             Player(
                 it, 0, false, mutableListOf(), mutableListOf())
         }.toMutableList()
+        require(playerList.isNotEmpty()) // Überprüfen, ob Spieler in Spiel sind
+        check(playerNames[0] != playerNames[1])
 
         //Erstellen game
         val game = DiveGame(playerList.random(), playerList, mutableListOf(), mutableListOf(), Stack())
@@ -50,6 +52,7 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
     fun startTurn() {
         val game = rootService.currentGame
         checkNotNull(game)
+        checkNotNull(game.currentPlayer)
         onAllRefreshables {refreshAfterGameStart() }
     }
 
@@ -59,11 +62,13 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
     fun endTurn() {
         val game = rootService.currentGame
         checkNotNull(game)
+        checkNotNull(game.currentPlayer)
 
         //Tauschen Players
-        val currentPlayer = game.currentPlayer
-        if(game.playerList[0] == currentPlayer){
-            game.playerList[1]
+        if(game.playerList[0] == game.currentPlayer){
+            game.currentPlayer = game.playerList[1]
+        } else {
+            game.currentPlayer = game.playerList[0]
         }
 
         //Wenn runde für aktuelle Spieler endet, müssen die Karten verdeckt sein
@@ -92,17 +97,41 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
         return drawStack
     }
 
+    /**
+     * [isGameEnded] überprüft ob game beendet ist (Boolean)
+     */
     companion object fun isGameEnded(): Boolean {
         val game = rootService.currentGame
         checkNotNull(game)
 
         //Wenn es keine Karten mehr in der Mitte gibt und
-        // Spieler haben keine Karten, endet das Spiel
         val drawStackEmpty = game.drawStack.empty() //Can be isEmpty()
-        val bothNoDrawn = !game.playerList[0].hand.isEmpty() &&
-                !game.playerList[1].hand.isEmpty()
 
         onAllRefreshables { refreshAfterGameEnds() }
-        return drawStackEmpty && bothNoDrawn
+        return drawStackEmpty
+
+    }
+
+    fun gameEndScore() {
+        val game = rootService.currentGame
+        checkNotNull(game)
+
+        val player1 = game.playerList[0]
+        val player2 = game.playerList[1]
+        lateinit var winner: Player
+        lateinit var looser: Player
+        if(isGameEnded()) {
+            if(player1.score > player2.score) {
+                winner = player1
+                looser = player2
+            } else {
+                winner = player2
+                looser = player1
+            }
+        } else {
+            println("The game has not endet yet.")
+        }
+        println("Winner is: " + winner.name + " with Score: " + winner.score)
+        println("Looser is: " + looser.name + " with Score: " + looser.score)
     }
 }

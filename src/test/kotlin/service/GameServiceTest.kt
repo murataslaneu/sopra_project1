@@ -118,7 +118,6 @@ class GameServiceTest {
      */
     @Test
     fun testEndTurn(){
-
         val game = service.currentGame
         assertNotNull(game) //Spiel muss noch vorhanden sein.
 
