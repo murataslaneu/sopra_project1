@@ -40,6 +40,9 @@ class GameServiceTest {
         val game = service.currentGame
         assertNotNull(game)
 
+        val firstPlayer = game.currentPlayer
+        println(firstPlayer.name)
+
         /** Überprüfen ob playerStack 52 hat **/
         val player1Hand = game.playerList[0].hand
         val player2Hand = game.playerList[1].hand

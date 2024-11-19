@@ -24,12 +24,18 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         checkNotNull(game)
         checkNotNull(game.currentPlayer)
 
-        if(game.trio.size < 3) throw IllegalArgumentException("Trio must be at least 0..2 ")
+        //check(game.trio.isNotEmpty()) { "Trio is empty" }
+
+        //if(game.trio.size < 3) throw IllegalArgumentException("Trio must be at least 0..2 ")
+
+        if(!isValidTrio(playerCard = card)) throw IllegalArgumentException("Nicht valide Card")
 
         val playStack = game.trio
         check(game.currentPlayer.hand.isNotEmpty())
 
-        if(isValidTrio(playerCard = card)) throw IllegalArgumentException("Nicht valide Card")
+        if (!game.currentPlayer.hand.contains(card)) {
+            throw IllegalArgumentException("Card not found in hand")
+        }
         game.currentPlayer.hand.remove(card)
         playStack.add(card)
 
@@ -38,10 +44,13 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         if(game.trio.size == 3) {
             val firstSuit = game.trio[0].suit
             val firstValue = game.trio[0].value
+
             if(game.trio.all { it.suit == firstSuit }) {
                 game.currentPlayer.score += trioSuitScore
             } else if (game.trio.all { it.value == firstValue }) {
                 game.currentPlayer.score += trioValueScore
+            } else {
+                throw IllegalArgumentException("Trio is neither valid suit nor value")
             }
             game.playerList.forEach {it.swapped = true}
         }
@@ -63,7 +72,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
             if(game.drawStack.isEmpty()) { rootService.gameService.isGameEnded() }
             onAllRefreshables {
                 refreshAfterCardDrawn(drawnCard)
-                refreshAfterTurnEnds()
+                //refreshAfterTurnEnds()
             }
         }else { rootService.gameService.isGameEnded() }
     }
@@ -125,6 +134,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
     companion object fun isValidTrio(playerCard: Card): Boolean {
         val game = rootService.currentGame
         checkNotNull(game)
+
         val validSuitValue: (Card, Card) -> Boolean = {card1, card2 ->
             card1.suit == card2.suit || card1.value == card2.value
         }

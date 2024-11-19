@@ -41,6 +41,13 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
             }
         }
         rootService.currentGame = game
+
+        if(game.playerList[0] == game.currentPlayer){
+            game.currentPlayer = game.playerList[0]
+        } else {
+            game.currentPlayer = game.playerList[1]
+        }
+
         onAllRefreshables { refreshAfterGameStart() }
         startTurn()
     }
