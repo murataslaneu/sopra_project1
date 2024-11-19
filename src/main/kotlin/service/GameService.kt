@@ -41,8 +41,14 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
             }
         }
         rootService.currentGame = game
+
+        if(game.playerList[0] == game.currentPlayer){
+            game.currentPlayer = game.playerList[0]
+        } else {
+            game.currentPlayer = game.playerList[1]
+        }
+
         onAllRefreshables { refreshAfterGameStart() }
-        startTurn()
     }
 
     /**
@@ -52,8 +58,8 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
     fun startTurn() {
         val game = rootService.currentGame
         checkNotNull(game)
-        checkNotNull(game.currentPlayer)
-        onAllRefreshables {refreshAfterGameStart() }
+
+        onAllRefreshables { refreshAfterTurnStart() }
     }
 
     /**
@@ -65,19 +71,9 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
         checkNotNull(game.currentPlayer)
 
         //Tauschen Players
-        if(game.playerList[0] == game.currentPlayer){
-            game.currentPlayer = game.playerList[1]
-        } else {
-            game.currentPlayer = game.playerList[0]
-        }
-
-        //Wenn runde für aktuelle Spieler endet, müssen die Karten verdeckt sein
-        game.currentPlayer.hand.forEach { cards ->
-            cards?.isHidden = true
-        }
+        game.currentPlayer = if (game.currentPlayer == game.playerList[0]) game.playerList[1] else game.playerList[0]
 
         onAllRefreshables { refreshAfterTurnEnds() }
-        startTurn()
     }
 
     /**
@@ -98,20 +94,27 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
     }
 
     /**
-     * [isGameEnded] überprüft ob game beendet ist (Boolean)
+     * [isGameEnded] überprüft, ob game beendet ist.
+     *
+     * Diese Funktion prüft, ob das aktuelle Spiel beendet ist, und gibt einen entsprechenden
+     * booleschen Wert zurück.
      */
     companion object fun isGameEnded(): Boolean {
         val game = rootService.currentGame
         checkNotNull(game)
 
         //Wenn es keine Karten mehr in der Mitte gibt und
-        val drawStackEmpty = game.drawStack.empty() //Can be isEmpty()
+        val drawStackEmpty = game.drawStack.empty()
 
         onAllRefreshables { refreshAfterGameEnds() }
         return drawStackEmpty
 
     }
 
+    /**
+     * [gameEndScore] Berechnet und gibt die Endstände des Spiels aus.
+     * Wie zum beispiel, winner oder looser, oder namen mit Punkten.
+     */
     fun gameEndScore() {
         val game = rootService.currentGame
         checkNotNull(game)

@@ -1,9 +1,9 @@
-import gui.SopraApplication
+import gui.DiveApplication
 
 /**
  * [main] Funktion.
  */
 fun main() {
-    SopraApplication().show()
-    println("Application ended. Goodbye")
+    DiveApplication().show()
+    println("Game ended. Goodbye")
 }
