@@ -32,7 +32,7 @@ class GameScene(private val rootService: RootService):
             onMouseClicked = { rootService.gameService.isGameEnded() } }
 
     /** Player 1 Components **/
-    private val player1Hand = LinearLayout<CardView>(895,800,300,50)
+    private val player1Hand = LinearLayout<CardView>(800,800,650, spacing = 40)
 
     private val player1DiscardPile = CardStack<CardView>(600, 830, 130, 200,
         Alignment.CENTER, ColorVisual(255, 255, 255, 50))
@@ -42,7 +42,7 @@ class GameScene(private val rootService: RootService):
         font = Font(16, color = Color.BLACK) )
 
     /** Player 2 Components **/
-    private val player2Hand = LinearLayout<CardView>(895,50,300,50)
+    private val player2Hand = LinearLayout<CardView>(800,50,650, spacing = 40)
 
     private val player2DiscardPile = CardStack<CardView>(600, 60, 130, 200,
         alignment = Alignment.CENTER,
@@ -53,11 +53,12 @@ class GameScene(private val rootService: RootService):
         text = "Player's Discard Pile", font = Font(16, color = Color.BLACK) )
 
     /** right side (Player Names & Score & Buttons) **/
-    private val currentPlayerLabel = Label(1500,100,300,50, font = Font(size = 30, color = Color.BLACK))
+    private val currentPlayerLabel = Label(1500,100,400,50,
+        font = Font(size = 26, color = Color.BLACK))
 
-    private val player1ScoreLabel = Label(1500,200,300,50, font = Font(size = 26, color = Color.RED))
+    private val player1ScoreLabel = Label(1500,200,300,50, font = Font(size = 24, color = Color.RED))
 
-    private val player2ScoreLabel = Label(1500,300,300,50, font = Font(size = 26, color = Color.RED))
+    private val player2ScoreLabel = Label(1500,300,300,50, font = Font(size = 24, color = Color.RED))
 
     //Player can change the cards one from the hand and one from play area with clicking on swap Button.
     private val swapButton = Button(1500, 600,150,50, text = "Swap").apply {
@@ -79,16 +80,15 @@ class GameScene(private val rootService: RootService):
     //Card is played (from hand to play Area) when player clicked on play Card button.
     private val playCardButton = Button(1500, 890,150,50, text = "Play Card").apply {
         onMouseClicked = { val playerCard = cardMap.backward(clickedPlayerCard!!)
-        rootService.playerActionService.playCard(playerCard) }    }
+            rootService.playerActionService.playCard(playerCard) }    }
 
     //Player can discard one Card only when hand size is more than 8 and end Turn button is disabled.
-    private val discardCardButton = Button(1500, 540,150,50, text = "Discard Card").apply {
-        onMouseClicked = { rootService.gameService.endTurn() } }.apply { onMouseClicked = {
-        if(rootService.currentGame!!.currentPlayer.hand.size > 8) {
+    private val discardCardButton = Button(1500, 540,150,50, text = "Discard Card").apply{
+        onMouseClicked = { if(rootService.currentGame!!.currentPlayer.hand.size > 8) {
             val playerCard = cardMap.backward(clickedPlayerCard!!)
             rootService.playerActionService.discardCard(playerCard)
             endTurnButton.isDisabled = false
-        } else {throw IllegalArgumentException("You can discard Card only when you have more than 8 Cards in Hand")} } }
+        } else {throw IllegalArgumentException("You can discard Card only when you have more than 8 Cards in Hand")}}}
 
     /** Play Area as Linear layout **/
     private val playArea = LinearLayout<CardView>(810,315,400,350, alignment = Alignment.CENTER)
@@ -419,7 +419,8 @@ class GameScene(private val rootService: RootService):
      * @param stackView, The UI component where the cards will be displayed.
      * @param cardImageLoader, A helper object (class from service) to load front and back Images for each card.
      */
-    private fun initializeStackView(stack: List<Card>, stackView: CardStack<CardView>, cardImageLoader: CardImageLoader) {
+    private fun initializeStackView(stack: List<Card>, stackView: CardStack<CardView>,
+                                    cardImageLoader: CardImageLoader) {
         stackView.clear()
         stack.reversed().forEach { card -> // Iterate through the list of cards
             val cardView = CardView(
@@ -440,11 +441,12 @@ class GameScene(private val rootService: RootService):
      * front or back Image for each card with [changeSide].
      *
      * @param cardList, mutable List of [Card] objects to be displayed in the linear view.
-     * @param linearView, The UI component of type [LinearLayout] where cards will be displayed. (mostly for hand)
+     * @param linearView The UI component of type [LinearLayout] where cards will be displayed. (mostly for hand)
      * @param cardImageLoader, helper object to load the front and back images for each card.
      * @param changeSide, boolean to determine whether the front or back of the cards should be displayed.
      */
-    private fun initializeLinearView(cardList: MutableList<Card>, linearView: LinearLayout<CardView>, cardImageLoader: CardImageLoader, changeSide: Boolean) {
+    private fun initializeLinearView(cardList: MutableList<Card>, linearView: LinearLayout<CardView>,
+                                     cardImageLoader: CardImageLoader, changeSide: Boolean) {
         linearView.clear()
         cardList.forEach { card -> // Iterate through the list of cards
             val cardView = CardView(

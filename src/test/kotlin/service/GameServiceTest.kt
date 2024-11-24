@@ -130,7 +130,7 @@ class GameServiceTest {
 
         //Karten verdecken nach EndTurn für aktuelle Spieler, damit gegen Spieler, die Karte nicht sieht
         service.gameService.endTurn()
-        val playerCards = game.currentPlayer.hand.all { it!!.isHidden }
+        val playerCards = game.currentPlayer.hand.all { !it.isHidden }
         assertTrue{ playerCards }
 
         //Test für refreshable Turn Ends

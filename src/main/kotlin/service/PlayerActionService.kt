@@ -68,7 +68,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
             //Nach Ziehen eine Karte, falls es letzte Karte ist, Spiel endet.
             if(game.drawStack.isEmpty()) { rootService.gameService.isGameEnded() }
         }else if(game.currentPlayer.hand.size > 8) {
-            throw IllegalArgumentException("You need to discard 1 card or play the Last card before end the Turn!")
+            throw IllegalArgumentException("You need to discard 1 card or play the last card before end the Turn!")
         }else { rootService.gameService.isGameEnded() }
     }
 
@@ -98,7 +98,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
                 trioCard.isHidden = false
                 onAllRefreshables { refreshAfterCardSwap(playerCard, trioCard) }
             } else { throw IllegalArgumentException("Trio is neither valid suit nor value") }
-        }
+        } else { throw IllegalArgumentException("Before use swap action, you must complete a trio!")}
     }
 
     /**

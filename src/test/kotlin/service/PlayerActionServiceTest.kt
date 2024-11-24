@@ -94,7 +94,8 @@ class PlayerActionServiceTest {
          * trioFarbe oder trioValue getriggert ist, dann addiert
          * Punkte in Balance des Spielers.
          */
-        val card = Card(false, CardSuit.DIAMONDS, CardValue.SEVEN)
+        val card = Card(true, CardSuit.DIAMONDS, CardValue.FIVE)
+        game.currentPlayer.hand.add(card)
         rootService.playerActionService.playCard(card)
 
         if(diamondFilter.size == 3 ) {
@@ -200,7 +201,7 @@ class PlayerActionServiceTest {
 
         //Tauschen Spades_Ten mit Clubs_Five
         rootService.playerActionService.swapCard(
-            playerHand[0]!!, middleCards[0])
+            playerHand[0], middleCards[0])
 
         //Size muss gleich sein, weil Spieler nur Karten getauscht hat
         assertEquals(5, playerHand.size)
@@ -244,7 +245,7 @@ class PlayerActionServiceTest {
 
         //discardCard ist private, deswegen entfernen wir Karte wie unten
         val cardToDiscard = playerHand[2]
-        rootService.playerActionService.discardCard(cardToDiscard!!)
+        rootService.playerActionService.discardCard(cardToDiscard)
 
         assertEquals(8,playerHand.size)
         assertEquals(1, discardStack.size)
