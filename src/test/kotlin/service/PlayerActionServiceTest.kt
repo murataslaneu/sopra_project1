@@ -38,6 +38,7 @@ class PlayerActionServiceTest {
     fun testPlayCard(){
         val game = rootService.currentGame
         assertNotNull(game) //Überprüfen, ob Spiel vorhanden ist
+        assertNotNull(game.currentPlayer.hand.isNotEmpty())
 
         //Addieren eine Karte, um später zu überprüfen
         val card = Card(
