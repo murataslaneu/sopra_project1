@@ -251,7 +251,9 @@ class GameScene(private val rootService: RootService):
         playCardButton.isDisabled = false
         swapButton.isDisabled = false
         drawPile.isDisabled = false
-        swappedCheckBox.isChecked = false
+
+        //If player already used the swap action, box is checked.
+        if(!game.currentPlayer.swapped){ swappedCheckBox.isChecked = false}
     }
 
     /**
@@ -346,7 +348,6 @@ class GameScene(private val rootService: RootService):
 
             endTurnButton.isDisabled = false
             swapButton.isDisabled = true
-            endTurnButton.isDisabled = false
         }
     }
 
@@ -461,7 +462,6 @@ class GameScene(private val rootService: RootService):
             cardMap.add(card to cardView) // Map the card to its corresponding view
         }
     }
-
 
     /**
      * Updates a given UI container to display the current state of a players hand or other

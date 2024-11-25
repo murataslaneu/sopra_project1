@@ -82,12 +82,13 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         val game = rootService.currentGame
         checkNotNull(game)
         checkNotNull(game.currentPlayer)
-        //require(!game.currentPlayer.swapped) {"You already swapped!"}
+        require(!game.currentPlayer.swapped) {"You already swapped!"}
 
         val playArea = game.trio
         if(!game.currentPlayer.swapped) {
             //Wenn der Spieler eine Karte der gleichen Serie oder des gleichen Wertes hat
-            if (playArea.all { it.suit == trioCard.suit || it.value == trioCard.value && (playArea.size in 1..2) }) {
+            if (playArea.all { it.suit == trioCard.suit || it.value == trioCard.value &&
+                        (playArea.size in 1..2) }) {
                 //Tauschen Karten und setzen Boolean Werte im gegenteil
                 game.trio.add(playerCard)
                 game.currentPlayer.hand.remove(playerCard)
@@ -98,7 +99,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
                 trioCard.isHidden = false
                 onAllRefreshables { refreshAfterCardSwap(playerCard, trioCard) }
             } else { throw IllegalArgumentException("Trio is neither valid suit nor value") }
-        } else { throw IllegalArgumentException("Before use swap action, you must complete a trio!")}
+        }
     }
 
     /**
@@ -111,6 +112,7 @@ class PlayerActionService(private val rootService: RootService): AbstractRefresh
         val game = rootService.currentGame
         checkNotNull(game)
         checkNotNull(game.currentPlayer)
+        if (!game.currentPlayer.hand.contains(playerCard)) { throw IllegalArgumentException("Card not found in hand") }
 
         if(game.currentPlayer.hand.size > 8){
             game.currentPlayer.hand.remove(playerCard)
