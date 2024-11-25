@@ -26,11 +26,6 @@ class GameScene(private val rootService: RootService):
     BoardGameScene(1920, 1080, background = ImageVisual("casino_back.jpg")), Refreshables {
 
                                         /** All UI Components **/
-
-    private val endGame = Button(50, 75,250,50,
-        text = "Don't wanna Play ? -> END GAME",).apply {
-            onMouseClicked = { rootService.gameService.isGameEnded() } }
-
     /** Player 1 Components **/
     private val player1Hand = LinearLayout<CardView>(800,800,650, spacing = 40)
 
@@ -144,8 +139,7 @@ class GameScene(private val rootService: RootService):
             drawPileLabel,
             drawPile,
             discardPile,
-            discardPileLabel,
-            endGame)
+            discardPileLabel)
     }
 
     /**
