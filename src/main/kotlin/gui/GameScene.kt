@@ -27,7 +27,21 @@ class GameScene(private val rootService: RootService):
 
                                         /** All UI Components **/
     /** Player 1 Components **/
-    private val player1Hand = LinearLayout<CardView>(800,800,650, spacing = 40)
+    private val player1Hand = LinearLayout<CardView>(800,800,650, spacing = 40).apply {
+        onMouseClicked = {
+            if(clickedPlayAreaCard == null || cardDrawnInCurrentTurn){
+                swapButton.isDisabled = true
+            } else {
+                swapButton.isDisabled = false
+            }
+            if(!cardPlayedTurn){
+                playCardButton.isDisabled = false
+            } else {
+                playCardButton.isDisabled = true
+            }
+
+        }
+    }
 
     private val player1DiscardPile = CardStack<CardView>(600, 830, 130, 200,
         Alignment.CENTER, ColorVisual(255, 255, 255, 50))
@@ -37,7 +51,20 @@ class GameScene(private val rootService: RootService):
         font = Font(16, color = Color.BLACK) )
 
     /** Player 2 Components **/
-    private val player2Hand = LinearLayout<CardView>(800,50,650, spacing = 40)
+    private val player2Hand = LinearLayout<CardView>(800,50,650, spacing = 40).apply {
+        onMouseClicked = {
+            if(clickedPlayAreaCard == null || cardDrawnInCurrentTurn){
+                swapButton.isDisabled = true
+            } else {
+                swapButton.isDisabled = false
+            }
+            if(!cardPlayedTurn){
+                playCardButton.isDisabled = false
+            } else {
+                playCardButton.isDisabled = true
+            }
+        }
+    }
 
     private val player2DiscardPile = CardStack<CardView>(600, 60, 130, 200,
         alignment = Alignment.CENTER,
@@ -79,11 +106,11 @@ class GameScene(private val rootService: RootService):
 
     //Player can discard one Card only when hand size is more than 8 and end Turn button is disabled.
     private val discardCardButton = Button(1500, 540,150,50, text = "Discard Card").apply{
-        onMouseClicked = { if(rootService.currentGame!!.currentPlayer.hand.size > 8) {
+        onMouseClicked = { if(rootService.currentGame!!.currentPlayer.hand.size > 8 && clickedPlayerCard != null ) {
             val playerCard = cardMap.backward(clickedPlayerCard!!)
             rootService.playerActionService.discardCard(playerCard)
             endTurnButton.isDisabled = false
-        } else {throw IllegalArgumentException("You can discard Card only when you have more than 8 Cards in Hand")}}}
+        } else {throw IllegalArgumentException("Choose the last card to play or any card to discard!")}}}
 
     /** Play Area as Linear layout **/
     private val playArea = LinearLayout<CardView>(810,315,400,350, alignment = Alignment.CENTER)
@@ -96,8 +123,16 @@ class GameScene(private val rootService: RootService):
     private val drawPile = CardStack<CardView> (250,600, alignment = Alignment.CENTER  ).apply {
         visual = ColorVisual(255, 255, 255, 50)
         onMouseClicked = {
+            val game = rootService.currentGame!!
+            val currentPlayerHand = if(game.currentPlayer == game.playerList[0]) player1Hand else player2Hand
             if(!cardDrawnInCurrentTurn){
                 rootService.playerActionService.drawCard()
+                val drawnCard = rootService.currentGame!!.currentPlayer.hand.last()
+                val clickDrawnCard = cardMap.forward(drawnCard)
+                clickedPlayerCard = clickDrawnCard
+                if(currentPlayerHand.contains(clickDrawnCard)){
+                    clickedPlayerCard = clickDrawnCard
+                }
             } else { throw IllegalArgumentException(" You already drawn a 1 Card. ") }
         }
     }
@@ -228,6 +263,8 @@ class GameScene(private val rootService: RootService):
         //reset the clicked cards after new round started.
         clickedPlayerCard = null
         clickedPlayAreaCard = null
+        playCardButton.isDisabled = true
+        swapButton.isDisabled = true
     }
 
     /**
@@ -248,6 +285,7 @@ class GameScene(private val rootService: RootService):
 
         //If player already used the swap action, box is checked.
         if(!game.currentPlayer.swapped){ swappedCheckBox.isChecked = false}
+        cardPlayedTurn = false
     }
 
     /**
@@ -259,6 +297,7 @@ class GameScene(private val rootService: RootService):
      *
      * Player can play card when [clickedPlayerCard] is selected and clicked on [playCardButton].
      */
+    private var cardPlayedTurn = false
     override fun refreshAfterCardPlayed(playedCard: Card) {
         val game = rootService.currentGame
         checkNotNull(game) {"No started game found."}
@@ -286,6 +325,7 @@ class GameScene(private val rootService: RootService):
         endTurnButton.isDisabled = false
         drawPile.isDisabled = true
         discardCardButton.isVisible = false
+        cardPlayedTurn = true
     }
 
     /**
@@ -317,19 +357,9 @@ class GameScene(private val rootService: RootService):
         refreshView(game.currentPlayer.playerStack, player1DiscardPile, true)
         refreshView(secondPlayer.playerStack, player2DiscardPile, true)
 
-        playCardButton.isDisabled = false
+        //playCardButton.isDisabled = false
         cardDrawnInCurrentTurn = true
 
-        // lock the end turn button that player cant end the turn with >8 cards.
-        // else player can play the game just with last drawn card or end the turn
-        val currentPlayer = if(game.currentPlayer == game.playerList[0]) player1Hand else player2Hand
-        if(game.currentPlayer.hand.size > 8) {
-            for (cardView in currentPlayer) { cardView.onMouseClicked = { clickedPlayerCard = cardView } }
-            discardCardButton.isVisible = true
-            endTurnButton.isDisabled = true
-            swapButton.isDisabled = true
-            clickedPlayerCard = null
-        } else {
             //remove the clickable action, that player can just contact with last card. (play or endTurn)
             for (cards in game.currentPlayer.hand) {
                 val cardView = cardMap.forward(cards)
@@ -341,8 +371,17 @@ class GameScene(private val rootService: RootService):
             drawnCard.onMouseClicked = { clickedPlayerCard = drawnCard }
 
             endTurnButton.isDisabled = false
-            swapButton.isDisabled = true
-        }
+
+            // lock the end turn button that player cant end the turn with >8 cards.
+            // else player can play the game just with last drawn card or end the turn
+            if(game.currentPlayer.hand.size > 8) {
+                val currentPlayer = if(game.currentPlayer == game.playerList[0]) player1Hand else player2Hand
+                for (cardView in currentPlayer) { cardView.onMouseClicked = { clickedPlayerCard = cardView } }
+                discardCardButton.isVisible = true
+                endTurnButton.isDisabled = true
+                swapButton.isDisabled = true
+            }
+        swapButton.isDisabled = true
     }
 
     /**
