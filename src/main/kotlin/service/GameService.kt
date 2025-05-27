@@ -27,6 +27,8 @@ class GameService(private val rootService: RootService): AbstractRefreshingServi
         require(playerList.isNotEmpty()) // Überprüfen, ob Spieler in Spiel sind
         check(playerNames[0] != playerNames[1])
 
+        require(playerNames.size in 2 .. 4) { "The number of players must be between 2 and 4" }
+
         //Erstellen game
         val game = DiveGame(playerList.random(), playerList, mutableListOf(), mutableListOf(), Stack())
 

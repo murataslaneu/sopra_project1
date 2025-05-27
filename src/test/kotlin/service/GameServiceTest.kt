@@ -30,6 +30,13 @@ class GameServiceTest {
         service.gameService.startNewGame(listOf("Tom", "Alice"))
     }
 
+    @Test
+    fun testScoringRulesEntryCount() {
+        assertFailsWith<IllegalArgumentException> {
+            service.gameService.startNewGame(listOf("Tom","Tom1","Tom2","Tom3","Tom4"))
+        }
+    }
+
     /**
      * [testStartNewGame] testet die Methode 'startNewGame', in dem ein neues Spiel gestartet wird.
      * Überprüft, ob das Spiel korrekt initialisiert ist, einschließlich des leeren Trios (mitte Karten)
@@ -88,6 +95,8 @@ class GameServiceTest {
 
         /** Überprüft, ob das Refreshable Objekt aktualisiert wird. **/
         assertTrue { testRefreshable.refreshAfterGameStart }
+
+
     }
 
     /**
