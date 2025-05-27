@@ -1,3 +1,1 @@
-# SoPra Projekt 1 (Einzelprojekt)
-
-## Fertig
+# SoPra Projekt 1 (Card Game)
